@@ -1,0 +1,184 @@
+---
+title: Field
+description: 폼 필드를 구성하는 Label, Input, ErrorMessage 컴포넌트
+---
+
+import { ErrorMessage, Field, Input, Label } from '@bigmobility/vinyl-ui/field';
+
+## 개요
+
+`Field`는 라벨·입력·에러 메시지를 조합하는 오픈 프리미티브입니다. `Field`(Context root)로 감싸고 `Label`·`Input`·`ErrorMessage`를 배치하면,
+`Field`가 `id`·에러 상태 등을 context로 각 파트에 전달해 자동으로 연결해 줍니다.
+
+이 프리미티브는 **구조·형태를 직접 조합**해야 할 때 사용합니다.
+
+각 파트는 `Field` 없이 단독으로도 쓸 수 있으며, 그때는 `id`/`htmlFor` 등을 직접 연결해야 합니다.
+
+## 커스텀 예시
+
+`Field`가 `id`·`hasError`·`required`·`disabled`를 context로 내려주므로, 각 파트는 그 값을 전달 받아 사용이 가능합니다.
+만약, 중복해서 `props`를 지정하면 각 파트 컴포넌트의 `props`가 `Field`의 context보다 우선합니다.
+
+<Preview>
+  <Field required>
+    <Label>이메일</Label>
+    <Input placeholder="you@example.com" />
+  </Field>
+</Preview>
+
+```tsx
+import { useState } from 'react';
+import { Field, Label, Input, ErrorMessage } from '@bigmobility/vinyl-ui/field';
+
+export default function FieldExample() {
+  const [field, setField] = useState({
+    email: '',
+    error: '',
+  });
+
+  const handleChange = ({ name, value }: {
+    name: string;
+    value: string;
+  }) => {
+    setField({
+      ...field,
+      [name]: value,
+    });
+  };
+
+  return (
+    <Field
+      hasError={!!field.error}
+      required
+    >
+      <Label>이메일</Label>
+      <Input
+        name="email"
+        value={field.email}
+        onChange={handleChange}
+      />
+      <ErrorMessage>{field.error}</ErrorMessage>
+    </Field>
+  );
+}
+```
+
+## 에러 상태
+
+`Field`에 `hasError`를 주면 `Input` 스타일이 바뀌고 `ErrorMessage`가 노출됩니다.
+
+<Preview>
+  <Field hasError>
+    <Label>이메일</Label>
+    <Input placeholder="you@example.com" />
+    <ErrorMessage>올바른 이메일 형식이 아닙니다</ErrorMessage>
+  </Field>
+</Preview>
+
+## Field Props
+
+<PropsTable
+  type={{
+    id: {
+      type: 'string',
+      description: '필드 id. 미지정 시 자동 생성',
+    },
+    hasError: {
+      type: 'boolean',
+      default: 'false',
+      description: '에러 상태 — Input 스타일·aria, ErrorMessage 노출 제어',
+    },
+    required: {
+      type: 'boolean',
+      default: 'false',
+      description: '필수 표시 (Label·Input에 전파)',
+    },
+    disabled: {
+      type: 'boolean',
+      default: 'false',
+      description: '비활성화 (Input에 전파)',
+    },
+  }}
+/>
+
+## Label Props
+
+<PropsTable
+  type={{
+    required: {
+      type: 'boolean',
+      description: '필수 지정 및 필수 마크 표기',
+    },
+    htmlFor: {
+      type: 'string',
+      description: '연결할 input 의 id',
+    },
+  }}
+/>
+
+## Input Props
+
+`<input>`의 표준 속성(`value`·`onChange`·`placeholder`·`disabled` 등)을 그대로 사용 가능합니다.
+
+<PropsTable
+  type={{
+    hasError: {
+      type: 'boolean',
+      description: '에러 스타일·aria',
+    },
+    ref: {
+      type: 'Ref',
+      description: 'input(HTMLInputElement) 요소 ref',
+    },
+  }}
+/>
+
+## ErrorMessage Props
+
+`Field` 안에서는 `hasError`일 때만 노출됩니다. 단독 사용 시 `id`를 지정해야 합니다.
+
+<PropsTable
+  type={{
+    id: {
+      type: 'string',
+      description: '단독 사용 시 필드 base id',
+    },
+  }}
+/>
+
+## 접근성
+
+- 라벨 연결 — `Field`가 만든 inputId로 `Label`의 htmlFor와 `Input`의 id가 자동으로 이어집니다.
+- 에러 배선 — 에러 상태의 `Input`은 `aria-invalid`와 `aria-describedby`(에러 메시지 id를 가리킴) 속성을 갖습니다.
+- 폼 에러 포커스 — 여러 필드 중 가장 위 에러로 이동시키려면, 각 input의 `aria-invalid` 속성을 조회하세요. DOM 순서상 첫 매칭이 최상단입니다.
+
+```tsx
+const formRef = useRef<HTMLFormElement>(null);
+
+function focusFirstError() {
+  const element = formRef.current?.querySelector('[aria-invalid="true"]');
+  element?.focus();
+  element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+```
+
+- 특정 필드를 직접 제어하려면 `Input`의 `ref`로 input 노드에 접근할 수 있습니다.
+- 단독 사용 시에는 `Label`의 htmlFor, `Input`의 id, `ErrorMessage`의 id에 같은 값을 주면 됩니다.
+
+## 토큰 커스터마이징
+
+Field 파트는 아래 시맨틱 토큰을 참조합니다. ([테마](/docs/theming) 참고).
+
+| 토큰 | 미리보기 | 용도 |
+| --- | --- | --- |
+| `text.input` | <Swatch token="text.input" /> | 입력 텍스트·라벨 |
+| `text.input-soft` | <Swatch token="text.input-soft" /> | 플레이스홀더 |
+| `layout.bg-light` | <Swatch token="layout.bg-light" /> | 입력 배경 |
+| `layout.default-line` | <Swatch token="layout.default-line" /> | 입력 테두리 |
+| `layout.strong-line` | <Swatch token="layout.strong-line" /> | hover·focus 테두리 |
+| `layout.bg-issue` | <Swatch token="layout.bg-issue" /> | 에러 배경 |
+| `layout.issue-line` | <Swatch token="layout.issue-line" /> | 에러 테두리 |
+| `text.issue` | <Swatch token="text.issue" /> | 에러 메시지 |
+| `layout.primary` | <Swatch token="layout.primary" /> | 필수 표시 점 |
+| `layout.bg-disable` | <Swatch token="layout.bg-disable" /> | 비활성 배경 |
+| `text.disable` | <Swatch token="text.disable" /> | 비활성 텍스트 |
