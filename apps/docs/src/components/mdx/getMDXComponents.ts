@@ -9,6 +9,7 @@ import PropsTable from '../docs/PropsTable';
 import Section from '../docs/Section';
 import SelectDemo from '../docs/SelectDemo';
 import Swatch from '../docs/Swatch';
+import TextFieldDemo from '../docs/TextFieldDemo';
 
 import Code from './Code';
 
@@ -50,6 +51,7 @@ const baseComponents: MDXComponents = {
   Swatch,
   Palette,
   SelectDemo,
+  TextFieldDemo,
   TypeTable: PropsTable,
 };
 
