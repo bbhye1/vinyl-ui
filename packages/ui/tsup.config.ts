@@ -3,13 +3,18 @@ import { basename, extname, resolve } from 'node:path';
 
 import { defineConfig } from 'tsup';
 
-const entryFiles = [...globSync('src/*.{ts,tsx}'), 'src/preset/index.ts']
+const NESTED_ENTRIES: Record<string, string> = {
+  'src/preset/index.ts': 'preset/index',
+  'src/link-next.ts': 'link/next',
+};
+
+const entryFiles = [...globSync('src/*.{ts,tsx}'), ...Object.keys(NESTED_ENTRIES)]
   .filter((file) => !/\.(test|spec)\./.test(file));
 
 const entry = Object.fromEntries(
   entryFiles.map((file) => {
-    if (file === 'src/preset/index.ts') {
-      return ['preset/index', file];
+    if (file in NESTED_ENTRIES) {
+      return [NESTED_ENTRIES[file], file];
     }
 
     const key = basename(file, extname(file));
@@ -40,7 +45,7 @@ export default defineConfig({
   minify: false,
   treeshake: true,
   splitting: false,
-  external: ['react', 'react-dom', '@ark-ui/react', /^lucide-react(\/.*)?$/],
+  external: ['react', 'react-dom', '@ark-ui/react', /^lucide-react(\/.*)?$/, /^next(\/.*)?$/],
   esbuildOptions(options) {
     options.resolveExtensions = ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.css', '.json'];
   },

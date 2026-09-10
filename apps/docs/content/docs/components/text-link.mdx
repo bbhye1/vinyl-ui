@@ -1,0 +1,158 @@
+---
+title: TextLink
+description: 텍스트 형태의 링크 컴포넌트
+---
+
+import Link from 'next/link';
+import { TextLink } from '@bigmobility/vinyl-ui/link';
+
+## 기본 예시
+
+`underline`의 기본값은 `visible`입니다.
+
+<Preview>
+  <TextLink href="#">링크 텍스트</TextLink>
+</Preview>
+
+```tsx
+import { TextLink } from '@bigmobility/vinyl-ui/link';
+
+export default function TextLinkExample() {
+  return (
+    <TextLink href="#">링크 텍스트</TextLink>
+  );
+}
+```
+
+## Underline
+
+링크의 밑줄 스타일을 정합니다. 기본값은 `visible`입니다.
+
+<Preview>
+  <TextLink underline="visible" href="#">visible</TextLink>
+  <TextLink underline="none" href="#">none</TextLink>
+</Preview>
+
+```tsx
+import { TextLink } from '@bigmobility/vinyl-ui/link';
+
+export default function UnderlineTextLink() {
+  return (
+    <>
+      <TextLink
+        underline="visible"
+        href="#"
+      >
+        visible
+      </TextLink>
+      <TextLink
+        underline="none"
+        href="#"
+      >
+        none
+      </TextLink>
+    </>
+  );
+}
+```
+
+## Disabled
+
+<Preview>
+  <TextLink href="#" disabled>비활성 링크</TextLink>
+</Preview>
+
+```tsx
+import { TextLink } from '@bigmobility/vinyl-ui/link';
+
+export default function DisabledTextLink() {
+  return (
+    <TextLink
+      href="#"
+      disabled
+    >
+      비활성 링크
+    </TextLink>
+  );
+}
+```
+
+## 라우팅 라이브러리
+
+`asChild`를 사용하면 TextLink가 자체 `<a>` 요소 대신 자식 라우팅 컴포넌트를 렌더하며, 스타일과 속성이 자식에 병합됩니다. 이를 통해 전체 페이지 리로드 없이 클라이언트 사이드 라우팅을 적용할 수 있습니다.
+
+<Preview>
+  <TextLink asChild><Link href="/">링크 텍스트</Link></TextLink>
+</Preview>
+
+```tsx
+import Link from 'next/link';
+import { TextLink } from '@bigmobility/vinyl-ui/link';
+
+export default function AsChildTextLink() {
+  return (
+    <TextLink asChild>
+      <Link href="/dashboard">대시보드</Link>
+    </TextLink>
+  );
+}
+```
+
+### Next.js 바인딩
+
+Next.js 프로젝트에서는 `@bigmobility/vinyl-ui/link/next`를 사용하면 `asChild`를 직접 쓰지 않아도 됩니다. 내부적으로 `next/link`를 사용하여 클라이언트 사이드 라우팅을 지원합니다. Next.js 14 이상이 필요합니다.
+
+```tsx
+import { TextLink } from '@bigmobility/vinyl-ui/link/next';
+
+export default function NextTextLinkExample() {
+  return (
+    <TextLink href="/dashboard">대시보드</TextLink>
+  );
+}
+```
+
+## Props
+
+<PropsTable
+  type={{
+    href: {
+      type: 'string',
+      description: '링크 URL',
+    },
+    underline: {
+      type: "visible | none",
+      default: "visible",
+      description: '밑줄 스타일',
+    },
+    disabled: {
+      type: 'boolean',
+      default: 'false',
+      description: '비활성 상태',
+    },
+    asChild: {
+      type: 'boolean',
+      default: 'false',
+      description: '자식 요소를 렌더링 요소로 사용',
+    },
+  }}
+/>
+
+## 접근성
+
+- 네이티브 `<a>` 요소를 사용하므로 **키보드 포커스·Enter 활성화**가 기본 동작합니다.
+- `<a>` 요소는 네이티브 `disabled` 속성을 지원하지 않으므로, `disabled`를 전달하면 `aria-disabled="true"`로 보조 기기에 비활성 상태를 전달하고 `tabIndex={-1}`로 키보드 포커스 순서에서 제외합니다.
+- 새 창/탭으로 열리는 링크(`target="_blank"`)에는 `aria-label`을 추가하여 화면 낭독기 사용자에게 고지하세요.
+- `href` 없이 클릭 동작만 필요한 경우에는 이 컴포넌트 대신 `Button`을 사용하세요.
+
+## 토큰 커스터마이징
+
+TextLink는 아래 시맨틱 토큰을 참조합니다. ([테마](/docs/theming) 참고).
+
+| 토큰 | 미리보기 | 용도 |
+| --- | --- | --- |
+| `text.default` | <Swatch token="text.default" /> | 기본 텍스트 색상 |
+| `text.accent-primary` | <Swatch token="text.accent-primary" /> | hover·active 텍스트 색상 |
+| `text.disable` | <Swatch token="text.disable" /> | 비활성 텍스트 색상 |
+
+타이포는 `body.medium-normal` textStyle을 사용합니다.

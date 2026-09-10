@@ -1,15 +1,19 @@
 import { globSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, extname } from 'node:path';
 
-const PRESET = 'src/preset/index.ts';
+const NESTED_ENTRIES = {
+  'src/preset/index.ts': { name: 'preset', dist: 'preset/index' },
+  'src/link-next.ts': { name: 'link/next', dist: 'link/next' },
+};
 
-const files = [...globSync('src/*.{ts,tsx}'), PRESET]
+const files = [...globSync('src/*.{ts,tsx}'), ...Object.keys(NESTED_ENTRIES)]
   .filter((file) => !/\.(test|spec)\./.test(file));
 
 const exportsMap = Object.fromEntries(
   files.map((file) => {
-    const name = file === PRESET ? 'preset' : basename(file, extname(file));
-    const dist = file === PRESET ? 'preset/index' : name;
+    const nested = NESTED_ENTRIES[file];
+    const name = nested ? nested.name : basename(file, extname(file));
+    const dist = nested ? nested.dist : name;
 
     return [
       `./${name}`,
